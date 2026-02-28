@@ -34,7 +34,6 @@ def in_bounds(lat, lon):
 
 
 def parse_date(date_str):
-    """Try a few common formats, return (year, month, day_of_year) or None."""
     for fmt in ("%m/%d/%Y %I:%M:%S %p", "%m/%d/%Y %H:%M:%S", "%Y/%m/%d %H:%M:%S+00"):
         try:
             dt = datetime.strptime(date_str.strip(), fmt)

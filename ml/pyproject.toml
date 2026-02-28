@@ -1,8 +1,7 @@
 [project]
 name = "ml"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Simple ML model and data cleaning"
 requires-python = ">=3.13"
 dependencies = [
     "numpy>=2.4.2",

@@ -1,0 +1,10 @@
+[project]
+name = "ml"
+version = "0.1.0"
+description = "Simple ML model and data cleaning"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.4.2",
+    "scikit-learn>=1.8.0",
+    "xgboost>=3.2.0",
+]

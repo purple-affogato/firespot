@@ -68,10 +68,6 @@ def build_positives(density_table, land_cover_table):
 
 
 def build_negatives(density_table, land_cover_table, n_samples, seed=42):
-    """
-    Sample burnable cells with fire_rate = 0 from CONUS grid.
-    Also include non-burnable cells with rate = 0.
-    """
     rng = random.Random(seed)
     lat_min, lat_max, lon_min, lon_max = CONUS_BOUNDS
 

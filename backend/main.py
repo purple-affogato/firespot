@@ -10,7 +10,8 @@ import math
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 GRID_RES = 0.1
-non_burnable = [11, 12, 21, 22, 23, 24, 250]
+RATE_SCALE = 0.060
+non_burnable = [11, 12, 31, 250]
 
 def snap(lat, lon):
     return (
@@ -53,7 +54,7 @@ def get_map():
     lat, lon = latitude-0.1, longitude-0.1
     
     model = xgb.XGBRegressor()
-    model.load_model('model.ubj')
+    model.load_model('model2.ubj')
     
     coordinates = []
     dt = datetime.now()
@@ -64,8 +65,8 @@ def get_map():
             slat, slon = snap(lat, lon)
             coordinates.append([lat, lon, dt.month, int(dt.strftime('%j')), land_cover.get((slat, slon), 250)])
             print(coordinates[-1])
-            lon += 0.01
-        lat += 0.01
+            lon += 0.05
+        lat += 0.05
         lon = longitude-0.1
     
     # infer to get fire rate
@@ -75,9 +76,9 @@ def get_map():
     for i in range(len(pred)):
         # use fire rate in poisson distribution (intensity = 1-e^(-k))
         # k = rate * 5 years
-        prob = 0.05
+        prob = 0
         if coordinates[i][4] not in non_burnable:
-            prob = 1 - math.exp(-pred[i]*5)
+            prob = round(1 - math.exp(-pred[i]*RATE_SCALE*5), 3)
         lat, lon = coordinates[i][0:2]
         kml.newpoint(name=f"{lat},{lon}", coords=[(lat, lon)], description=str(prob))
     

@@ -71,11 +71,6 @@ def load_gridmet_table(path):
 
 
 def build_positives(density_table, land_cover_table, gridmet_table):
-    """
-    One record per unique burnable grid cell that has fired at least once.
-    Target = fire_count / N_YEARS (fires per year).
-    We expand each cell across all 12 months so the model learns seasonality.
-    """
     default_gm = [0.0] * len(GRIDMET_VARS)
     records = []
     for (lat, lon), count in density_table.items():

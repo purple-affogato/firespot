@@ -8,7 +8,6 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "fires_clean.csv")
-DENSITY_FILE = os.path.join(os.path.dirname(__file__), "data", "fire_density.csv")
 LAND_COVER_FILE = os.path.join(os.path.dirname(__file__), "data", "land_cover.csv")
 MODEL_FILE = os.path.join(os.path.dirname(__file__), "model.ubj")
 
@@ -32,12 +31,16 @@ def snap_to_grid(lat, lon, res=GRID_RES):
 
 
 def load_density_table(path):
-    density = {}
+    """Count distinct years burned per cell to avoid inflating counts from multi-incident fires."""
+    years_per_cell = {}
     with open(path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            key = (round(float(row["lat_cell"]), 6), round(float(row["lon_cell"]), 6))
-            density[key] = int(row["fire_count"])
-    return density
+            key = (round(float(row["latitude"]), 6), round(float(row["longitude"]), 6))
+            year = int(row["year"])
+            if key not in years_per_cell:
+                years_per_cell[key] = set()
+            years_per_cell[key].add(year)
+    return {key: len(years) for key, years in years_per_cell.items()}
 
 
 def load_land_cover_table(path):
@@ -97,7 +100,7 @@ def build_negatives(density_table, land_cover_table, n_samples, seed=42):
 
 def main():
     print("Loading tables...")
-    density_table = load_density_table(DENSITY_FILE)
+    density_table = load_density_table(DATA_FILE)
     land_cover_table = load_land_cover_table(LAND_COVER_FILE)
     print(
         f"  {len(density_table):,} fire cells, {len(land_cover_table):,} land cover cells"

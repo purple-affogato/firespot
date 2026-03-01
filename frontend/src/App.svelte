@@ -28,7 +28,7 @@ import {Style, Circle, Fill} from 'ol/style.js';
     let coordLat = 0.0;
     let coordLon = 0.0;
     // let backend = http://129.212.186.70
-    let backend = "https://team3-2.solarflare-godzilla.ts.net/"
+    let backend = "https://team3-2.solarflare-godzilla.ts.net"
 
     let source = new VectorSource();
 

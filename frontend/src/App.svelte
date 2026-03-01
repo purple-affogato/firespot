@@ -17,7 +17,7 @@
 import {Style, Circle, Fill} from 'ol/style.js';
 
     // if there's a place u gotta go, im the one you needta know, im the map, im the map im the map
-    let mapId = 20; 
+    let mapId = 20;
     let map = null;
 
     // bro what are the coords to nether fortress
@@ -27,6 +27,8 @@ import {Style, Circle, Fill} from 'ol/style.js';
     lon = null;
     let coordLat = 0.0;
     let coordLon = 0.0;
+    // let backend = http://129.212.186.70
+    let backend = "https://team3-2.solarflare-godzilla.ts.net/"
 
     let source = new VectorSource();
 
@@ -85,15 +87,15 @@ import {Style, Circle, Fill} from 'ol/style.js';
 
         map.getView().animate(
             {
-                zoom: 9.5, 
+                zoom: 9.5,
                 center: fromLonLat([coordLon, coordLat]),
                 duration: 750,
             }
-        ); 
-        
+        );
 
 
-        fetch(`http://129.212.186.70/get-map?latitude=${coordLat}&longitude=${coordLon}`)
+
+        fetch(`${}/get-map?latitude=${coordLat}&longitude=${coordLon}`)
             .then(r => r.text())
             .then(kmlData => {
 
@@ -106,7 +108,7 @@ import {Style, Circle, Fill} from 'ol/style.js';
                     console.log("features:", features.length);
                     console.log(source);
                     console.log(map.getLayers().getLength());
-                
+
                 // KML vs OpenLayers: lon/lat order convention
                 features.forEach(feature => {
                     const geom = feature.getGeometry();
@@ -126,9 +128,9 @@ import {Style, Circle, Fill} from 'ol/style.js';
 
                     // map.getView().fit(source.getExtent(), {
                     //    padding: [50,50,50,50]
-                    //}); 
+                    //});
             })
-        
+
 
         return {
             destroy() {
@@ -141,7 +143,7 @@ import {Style, Circle, Fill} from 'ol/style.js';
     }
 
     const checkLat = () => {
-        
+
     }
     const checkLon = () => {
 
@@ -149,17 +151,26 @@ import {Style, Circle, Fill} from 'ol/style.js';
 
 </script>
 
-
-<link rel="stylesheet" href="node_modules/ol/ol.css">
+<link rel="stylesheet" href="node_modules/ol/ol.css" />
 <div id={mapId} class="map" use:setupMap></div>
 
-<input bind:value={lat} oninput={checkLat} id=latIn class="lat" placeholder="latitude" />
+<input
+    bind:value={lat}
+    oninput={checkLat}
+    id="latIn"
+    class="lat"
+    placeholder="latitude"
+/>
 
-<input bind:value={lon} oninput={checkLon} id=lonIn class="lon" placeholder="longitude">
+<input
+    bind:value={lon}
+    oninput={checkLon}
+    id="lonIn"
+    class="lon"
+    placeholder="longitude"
+/>
 
-<button id=enterbtn class="enter" onclick={updateMap}>
-    Enter
-</button>
+<button id="enterbtn" class="enter" onclick={updateMap}> Enter </button>
 
 <style>
     .map {
@@ -193,4 +204,3 @@ import {Style, Circle, Fill} from 'ol/style.js';
         z-index: 2;
     }
 </style>
-

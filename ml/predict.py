@@ -6,7 +6,7 @@ import numpy as np
 import xgboost as xgb
 
 GRID_RES = 0.1
-RATE_SCALE = 0.060
+RATE_SCALE = 0.067
 NON_BURNABLE = {11, 12, 31, 250}
 MODEL_FILE = "model.ubj"
 LAND_COVER_FILE = "data/land_cover.csv"

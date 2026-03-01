@@ -133,12 +133,45 @@
 
     const checkLat = () => {};
     const checkLon = () => {};
+
+    let address = $state("");
+
+    const searchAddress = () => {
+        if (!address.trim()) return;
+        fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`,
+            { headers: { "Accept-Language": "en" } },
+        )
+            .then((r) => r.json())
+            .then((results) => {
+                if (results.length === 0) {
+                    alert("Address not found");
+                    return;
+                }
+                lat = parseFloat(results[0].lat);
+                lon = parseFloat(results[0].lon);
+                updateMap();
+            })
+            .catch((err) => console.error("Geocoding error:", err));
+    };
 </script>
 
 <link rel="stylesheet" href="node_modules/ol/ol.css" />
 <div id={mapId} class="map" use:setupMap></div>
 
 <div class="controls">
+    <input
+        bind:value={address}
+        onkeydown={(e) => {
+            if (e.key === "Enter") searchAddress();
+        }}
+        class="address-input"
+        placeholder="Search address..."
+    />
+    <button class="enter" onclick={searchAddress}>Search</button>
+
+    <div class="divider"></div>
+
     <input
         bind:value={lat}
         oninput={checkLat}
@@ -174,6 +207,19 @@
         top: 0;
         left: 0;
         z-index: 1;
+    }
+    .address-input {
+        font-size: 13px;
+        padding: 4px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 220px;
+    }
+    .divider {
+        width: 1px;
+        height: 20px;
+        background: #ccc;
+        margin: 0 4px;
     }
     .controls {
         position: absolute;

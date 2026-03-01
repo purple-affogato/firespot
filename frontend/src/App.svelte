@@ -138,29 +138,31 @@
 <link rel="stylesheet" href="node_modules/ol/ol.css" />
 <div id={mapId} class="map" use:setupMap></div>
 
-<input
-    bind:value={lat}
-    oninput={checkLat}
-    onkeydown={(e) => {
-        if (e.key === "Enter") updateMap();
-    }}
-    id="latIn"
-    class="lat"
-    placeholder="latitude"
-/>
+<div class="controls">
+    <input
+        bind:value={lat}
+        oninput={checkLat}
+        onkeydown={(e) => {
+            if (e.key === "Enter") updateMap();
+        }}
+        id="latIn"
+        class="coord-input"
+        placeholder="latitude"
+    />
 
-<input
-    bind:value={lon}
-    oninput={checkLon}
-    onkeydown={(e) => {
-        if (e.key === "Enter") updateMap();
-    }}
-    id="lonIn"
-    class="lon"
-    placeholder="longitude"
-/>
+    <input
+        bind:value={lon}
+        oninput={checkLon}
+        onkeydown={(e) => {
+            if (e.key === "Enter") updateMap();
+        }}
+        id="lonIn"
+        class="coord-input"
+        placeholder="longitude"
+    />
 
-<button id="enterbtn" class="enter" onclick={updateMap}> Enter </button>
+    <button id="enterbtn" class="enter" onclick={updateMap}>Enter</button>
+</div>
 
 <style>
     .map {
@@ -173,24 +175,32 @@
         left: 0;
         z-index: 1;
     }
-    .lat {
+    .controls {
         position: absolute;
-        top: 95%;
-        left: 10px;
-        z-index: 1;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    .lon {
-        position: absolute;
-        top: 95%;
-        left: 165px;
-        size: 15px;
-        z-index: 1;
+    .coord-input {
+        font-size: 13px;
+        padding: 4px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 130px;
     }
     .enter {
-        position: absolute;
-        top: 95%;
-        left: 325px;
-        font-size: 12px;
-        z-index: 2;
+        font-size: 13px;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
     }
 </style>

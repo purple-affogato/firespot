@@ -46,6 +46,10 @@ def get_map():
         longitude = round(float(longitude), 2)
     except ValueError:
         return "Invalid query parameters", 400
+        
+    # checking bounds
+    if latitude < -90 or latitude > 90 or longitude < -180 and longitude > 180:
+        return "Bad coordinates", 400
     
     kml = simplekml.Kml()
     

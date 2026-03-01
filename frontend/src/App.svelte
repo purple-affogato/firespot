@@ -141,6 +141,9 @@
 <input
     bind:value={lat}
     oninput={checkLat}
+    onkeydown={(e) => {
+        if (e.key === "Enter") updateMap();
+    }}
     id="latIn"
     class="lat"
     placeholder="latitude"
@@ -149,6 +152,9 @@
 <input
     bind:value={lon}
     oninput={checkLon}
+    onkeydown={(e) => {
+        if (e.key === "Enter") updateMap();
+    }}
     id="lonIn"
     class="lon"
     placeholder="longitude"

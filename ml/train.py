@@ -31,7 +31,6 @@ def snap_to_grid(lat, lon, res=GRID_RES):
 
 
 def load_density_table(path):
-    """Count distinct years burned per cell to avoid inflating counts from multi-incident fires."""
     years_per_cell = {}
     with open(path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):

@@ -29,8 +29,6 @@ GRIDMET_DIR = os.path.join(os.path.dirname(__file__), "data", "gridmet")
 GRIDMET_VARS = ["erc", "fm100", "fm1000", "tmmx", "vpd", "vs"]
 GRIDMET_YEARS = range(2010, 2021)
 
-# days since 1900-01-01 to calendar month lookup will be done via xarray time decoding
-
 BOUNDS = [
     (24.5, 49.5, -130.0, -66.9),  # CONUS (extended west for offshore)
     (51.0, 71.5, -180.0, -129.9),  # Alaska
@@ -41,7 +39,6 @@ VALID_YEARS = range(2010, 2027)
 
 GRID_RES = 0.1
 
-# NLCD classes considered non-burnable
 NON_BURNABLE = {
     11,  # Open Water
     12,  # Perennial Ice/Snow

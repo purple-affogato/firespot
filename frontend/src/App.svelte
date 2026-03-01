@@ -9,7 +9,6 @@
     import StadiaMaps from "ol/source/StadiaMaps.js";
     import VectorSource from "ol/source/Vector.js";
     import { fromLonLat } from "ol/proj.js";
-    import { onMount } from "svelte";
     import { SimpleGeometry } from "ol/geom";
 
     //debug
@@ -21,10 +20,8 @@
     let map = null;
 
     // bro what are the coords to nether fortress
-    let lat = $state(0.0);
-    lat = null;
-    let lon = $state(0.0);
-    lon = null;
+    let lat = $state(null);
+    let lon = $state(null);
     let coordLat = 0.0;
     let coordLon = 0.0;
     // let backend = http://129.212.186.70
@@ -154,6 +151,23 @@
             })
             .catch((err) => console.error("Geocoding error:", err));
     };
+    
+    const autofillLocation = () => {
+      // ask for user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+      }
+      
+      function success(position) {
+        console.log(position);
+        lat = position.coords.latitude;
+        lon = position.coords.longitude;
+        updateMap();
+      }
+      function error() {
+        alert("Could not get location!");
+      }
+    }
 </script>
 
 <link rel="stylesheet" href="node_modules/ol/ol.css" />
@@ -169,7 +183,7 @@
         placeholder="Search address..."
     />
     <button class="enter" onclick={searchAddress}>Search</button>
-
+    
     <div class="divider"></div>
 
     <input
@@ -195,6 +209,11 @@
     />
 
     <button id="enterbtn" class="enter" onclick={updateMap}>Enter</button>
+    
+    <div class="divider"></div>
+    
+    <button class="enter" onclick={autofillLocation}>Autofill</button>
+    
 </div>
 
 <style>

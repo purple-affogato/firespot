@@ -1,4 +1,6 @@
 <script lang="js">
+    import 'ol/ol.css';
+
     import Map from 'ol/Map.js';
     import View from 'ol/View.js';
     import KML from 'ol/format/KML.js';
@@ -9,62 +11,26 @@
     import {fromLonLat} from 'ol/proj.js';
     import {onMount} from 'svelte';
 
+
+
     let mapId = 20; 
     let map = null;
 
-    // let features = $state();
-
-/*
-    onMount(() => {
-        features;
-        let kmlData;
-        fetch('https://firespot-backend.vercel.app/get-map')
-        .then(response => response.text()) 
-        .then(data => {
-            kmlData = data;
-        });
-
-        const format = new KML();
-        features = format.readFeatures(kmlData,{
-            dataProjection:'EPSG:4326',
-            featureProjection:'EPSG:4326' 
-        });
-    });
-    */
-
-/*
-    let src;
-    let features;
-
-    onMount(async () => {
-        const response = await fetch('https://firespot-backend.vercel.app/get-map');
-        const kmlData = await response.text();
-
-        const format = new KML();
-        features = format.readFeatures(kmlData,{
-            dataProjection:'EPSG:4326',
-            featureProjection:'EPSG:3857' 
-        });
-
-        if (map) {
-            map.getLayers().item(1).getSource().addFeatures(features);
-        }
-    });
-*/
-    
+    const blur = document.getElementById('blur');
+    const radius = document.getElementById('radius');
 
     const setupMap = (node) => {
         const source = new VectorSource();
 
         const vector = new HeatmapLayer({
             source: source,
-            blur: 12,
-            radius: 6,
+            blur: 1,
+            radius: 5,
             weight: function(feature) {
                 const desc = feature.get('description');
                 return parseFloat(desc) || 0;
-        }
-    });
+            }
+        });
 
         const raster = new TileLayer({
             source: new StadiaMaps({
@@ -94,9 +60,29 @@
                 const format = new KML();
                 const features = format.readFeatures(kmlData, {
                     dataProjection: 'EPSG:4326',
-                    featureProjection: 'EPSG:3857'
+                    featureProjection: 'EPSG:4326' // keep in lon/lat for flipping later
                 });
+
+
+                // KML vs OpenLayers lon/lat order convention fix
+                features.forEach(feature => {
+                    const geom = feature.getGeometry();
+                    if(geom.getType() == 'Point') {
+                        const coords = geom.getCoordinates();
+                        geom.setCoordinates([coords[1], coords[0]]);
+                    }
+                })
+                features.forEach(f => {
+                    f.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+                })
+
                 source.addFeatures(features);
+
+                    /*map.getView().fit(source.getExtent(), {
+                        padding: [50,50,50,50]
+                    });*/
+
+                
             })
         
 

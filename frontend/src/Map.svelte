@@ -1,4 +1,6 @@
 <script lang="js">
+    import 'ol/ol.css';
+
     import Map from 'ol/Map.js';
     import View from 'ol/View.js';
     import KML from 'ol/format/KML.js';
@@ -9,22 +11,25 @@
     import {fromLonLat} from 'ol/proj.js';
     import {onMount} from 'svelte';
 
+
+
     let mapId = 20; 
     let map = null;
+
+    const blur = document.getElementById('blur');
+    const radius = document.getElementById('radius');
 
     const setupMap = (node) => {
         const source = new VectorSource();
 
         const vector = new HeatmapLayer({
             source: source,
-            blur: 25,
-            radius: 20,
-            /*
+            blur: 1,
+            radius: 5,
             weight: function(feature) {
                 const desc = feature.get('description');
                 return parseFloat(desc) || 0;
-            }*/
-            weight: () => 1
+            }
         });
 
         const raster = new TileLayer({

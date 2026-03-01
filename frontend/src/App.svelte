@@ -10,6 +10,11 @@
     import VectorSource from 'ol/source/Vector.js';
     import {fromLonLat} from 'ol/proj.js';
     import {onMount} from 'svelte';
+    import { SimpleGeometry } from 'ol/geom';
+
+    //debug
+    import VectorLayer from 'ol/layer/Vector.js';
+import {Style, Circle, Fill} from 'ol/style.js';
 
     // if there's a place u gotta go, im the one you needta know, im the map, im the map im the map
     let mapId = 20; 
@@ -23,19 +28,22 @@
     let coordLat = 0.0;
     let coordLon = 0.0;
 
+    let source = new VectorSource();
+
+    let vector = new HeatmapLayer({
+        source: source,
+        blur: 60,
+        radius: 50,
+        weight: f => {
+            const val = parseFloat(f.get('description')) || 0;
+            return val * 5;  // amplify
+        }
+    });
+
+
     const setupMap = (node) => {
         console.log("hey vro");
-        const source = new VectorSource();
-
-        const vector = new HeatmapLayer({
-            source: source,
-            blur: 1,
-            radius: 5,
-            weight: function(feature) {
-                const desc = feature.get('description');
-                return parseFloat(desc) || 0;
-            }
-        });
+        // const source = new VectorSource();
 
         const raster = new TileLayer({
             source: new StadiaMaps({
@@ -75,39 +83,52 @@
         if(lat != null) coordLat = lat;
         if(lon != null) coordLon = lon;
 
-        map.getView().animate({center: fromLonLat([coordLon, coordLat])}, {duration: 1000});
-        map.getView().animate({zoom: 13}, {duration: 750});  
+        map.getView().animate(
+            {
+                zoom: 9.5, 
+                center: fromLonLat([coordLon, coordLat]),
+                duration: 750,
+            }
+        ); 
+        
 
-        /*
-        fetch('https://firespot-backend.vercel.app/get-map')
+
+        fetch(`http://129.212.186.70/get-map?latitude=${coordLat}&longitude=${coordLon}`)
             .then(r => r.text())
             .then(kmlData => {
+
                 const format = new KML();
                 const features = format.readFeatures(kmlData, {
                     dataProjection: 'EPSG:4326',
                     featureProjection: 'EPSG:4326' // keep in lon/lat for flipping later
                 });
 
-
-                // KML vs OpenLayers: lon/lat order convention fix to lat/long
+                    console.log("features:", features.length);
+                    console.log(source);
+                    console.log(map.getLayers().getLength());
+                
+                // KML vs OpenLayers: lon/lat order convention
                 features.forEach(feature => {
                     const geom = feature.getGeometry();
-                    if(geom.getType() == 'Point') {
-                        const coords = geom.getCoordinates();
-                        geom.setCoordinates([coords[1], coords[0]]);
+                    if(geom instanceof SimpleGeometry) {
+                        if(geom.getType() == 'Point') {
+                            const coords = geom.getCoordinates();
+                            geom.setCoordinates([coords[1], coords[0]]);
+                        }
                     }
                 })
                 features.forEach(f => {
                     f.getGeometry().transform('EPSG:4326', 'EPSG:3857');
                 })
 
+                source.clear();
                 source.addFeatures(features);
 
                     // map.getView().fit(source.getExtent(), {
                     //    padding: [50,50,50,50]
                     //}); 
             })
-        */
+        
 
         return {
             destroy() {

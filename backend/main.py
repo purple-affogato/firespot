@@ -2,9 +2,31 @@ from flask import Flask, make_response, request
 from flask_cors import CORS
 import simplekml
 import xgboost as xgb
+import numpy as np
+from datetime import datetime
+import csv
+import math
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+GRID_RES = 0.1
+non_burnable = [11, 12, 21, 22, 23, 24, 250]
+
+def snap(lat, lon):
+    return (
+        round(round(lat / GRID_RES) * GRID_RES, 6),
+        round(round(lon / GRID_RES) * GRID_RES, 6),
+    )
+
+def load_land_cover():
+    land_cover = {}
+    with open('land_cover.csv', newline="") as f:
+        for row in csv.DictReader(f):
+            lat = float(row["lat_cell"])
+            lon = float(row["lon_cell"])
+            lc = int(row["land_cover"])
+            land_cover[(lat, lon)] = lc
+    return land_cover
 
 @app.route("/")
 def hello_world():
@@ -34,17 +56,29 @@ def get_map():
     model.load_model('model.ubj')
     
     coordinates = []
+    dt = datetime.now()
+    land_cover = load_land_cover()
     
     while lat <= latitude+0.1:
         while lon <= longitude+0.1:
-            coordinates.append(())
+            slat, slon = snap(lat, lon)
+            coordinates.append([lat, lon, dt.month, int(dt.strftime('%j')), land_cover.get((slat, slon), 250)])
+            print(coordinates[-1])
             lon += 0.01
         lat += 0.01
-        
+        lon = longitude-0.1
+    
     # infer to get fire rate
-    # use fire rate in poisson distribution (intensity = 1-e^(-k))
-    # k = rate * 5 years
-    # # coords=[(lat, lon)]
-    kml.newpoint(name="dummy", coords=[(lat, lon)], description=str(intensity))
+    x_infer = np.array(coordinates)
+    pred = model.predict(x_infer)
+    
+    for i in range(len(pred)):
+        # use fire rate in poisson distribution (intensity = 1-e^(-k))
+        # k = rate * 5 years
+        prob = 0.05
+        if coordinates[i][4] not in non_burnable:
+            prob = 1 - math.exp(-pred[i]*5)
+        lat, lon = coordinates[i][0:2]
+        kml.newpoint(name=f"{lat},{lon}", coords=[(lat, lon)], description=str(prob))
     
     return make_response(kml.kml(), 200, {'Content-Type': 'application/xml'})

@@ -3,6 +3,8 @@ H4H 2026 Submission
 
 Devpost description below.
 
+Note: The backend is currently down because AMD destroyed the GPU droplet. Currently finding another hosting solution.
+
 ## Inspiration
 California is one of the most fire-prone places on Earth. Everyone deserves to be prepared for the worst, and there are especially vulnerable populations who would greatly appreciate more information about fire safety such as the elderly, disabled, and non-English speakers.
 

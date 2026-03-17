@@ -6,7 +6,7 @@
     import KML from "ol/format/KML.js";
     import HeatmapLayer from "ol/layer/Heatmap.js";
     import TileLayer from "ol/layer/Tile.js";
-    import StadiaMaps from "ol/source/StadiaMaps.js";
+    import OSM from "ol/source/OSM.js";
     import VectorSource from "ol/source/Vector.js";
     import { fromLonLat } from "ol/proj.js";
     import { SimpleGeometry } from "ol/geom";
@@ -24,8 +24,7 @@
     let lon = $state(null);
     let coordLat = 0.0;
     let coordLon = 0.0;
-    // let backend = http://129.212.186.70
-    let backend = "https://team3-2.solarflare-godzilla.ts.net";
+    let backend = "";
 
     let source = new VectorSource();
 
@@ -44,9 +43,7 @@
         // const source = new VectorSource();
 
         const raster = new TileLayer({
-            source: new StadiaMaps({
-                layer: "osm_bright",
-            }),
+            source: new OSM()
         });
 
         map = new Map({
@@ -78,12 +75,12 @@
         if (lon != null) coordLon = lon;
 
         map.getView().animate({
-            zoom: 9.5,
+            zoom: 10,
             center: fromLonLat([coordLon, coordLat]),
             duration: 750,
         });
 
-        fetch(`${backend}/get-map?latitude=${coordLat}&longitude=${coordLon}`)
+        fetch(`/get-map?latitude=${coordLat}&longitude=${coordLon}`)
             .then((r) => r.text())
             .then((kmlData) => {
                 const format = new KML();

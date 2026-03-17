@@ -4,8 +4,11 @@ version = "0.1.0"
 description = "Simple ML model and data cleaning"
 requires-python = ">=3.13"
 dependencies = [
+    "h5netcdf>=1.8.1",
+    "netcdf4>=1.7.4",
     "numpy>=2.4.2",
     "rasterio>=1.5.0",
     "scikit-learn>=1.8.0",
+    "xarray>=2026.2.0",
     "xgboost>=3.2.0",
 ]

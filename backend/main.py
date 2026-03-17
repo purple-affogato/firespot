@@ -5,12 +5,13 @@ from datetime import datetime
 import numpy as np
 import simplekml
 import xgboost as xgb
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/dist')
 CORS(app, resources={r"/*": {"origins": "*"}})
 GRID_RES = 0.1
+GRIDMET_VARS = ["erc", "fm100", "fm1000", "tmmx", "vpd", "vs"]
 RATE_SCALE = 0.060
 non_burnable = [11, 12, 31, 250]
 
@@ -32,11 +33,23 @@ def load_land_cover():
             land_cover[(lat, lon)] = lc
     return land_cover
 
+def load_gridmet():
+    gridmet = {}
+    with open("../ml/data/gridmet.csv", newline="") as f:
+        for row in csv.DictReader(f):
+            lat = round(float(row["lat_cell"]), 6)
+            lon = round(float(row["lon_cell"]), 6)
+            gridmet[(lat, lon)] = [float(row[v]) if row[v] != "" else 0.0 for v in GRIDMET_VARS]
+    return gridmet
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
 
+
+@app.route("/<path:path>")
+def static_files(path):
+    return send_from_directory(app.static_folder, path)
 
 @app.route("/get-map", methods=["GET"])
 def get_map():
@@ -57,9 +70,12 @@ def get_map():
     # kml.newpoint(name="dummy", coords=[(37.3483333333, -121.9353888889)], description="0.5")
 
     lat, lon = latitude - 0.1, longitude - 0.1
+    gridmet = load_gridmet()
+    default_gm = [0.0] * 6
+
 
     model = xgb.XGBRegressor()
-    model.load_model("model2.ubj")
+    model.load_model("../ml/model2.ubj")
 
     coordinates = []
     dt = datetime.now()
@@ -68,6 +84,7 @@ def get_map():
     while lat <= latitude + 0.1:
         while lon <= longitude + 0.1:
             slat, slon = snap(lat, lon)
+            gm = gridmet.get((slat, slon), default_gm)
             coordinates.append(
                 [
                     slat,
@@ -75,7 +92,7 @@ def get_map():
                     dt.month,
                     int(dt.strftime("%j")),
                     land_cover.get((slat, slon), 250),
-                ]
+                ] + gm
             )
             print(coordinates[-1])
             lon += 0.05

@@ -2,7 +2,7 @@
 title: Firespot
 emoji: 🔥
 colorFrom: red
-colorTo: red
+colorTo: yellow
 sdk: docker
 pinned: false
 ---

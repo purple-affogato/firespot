@@ -35,7 +35,7 @@ def load_land_cover():
 
 def load_gridmet():
     gridmet = {}
-    with open("../ml/data/gridmet.csv", newline="") as f:
+    with open("gridmet.csv", newline="") as f:
         for row in csv.DictReader(f):
             lat = round(float(row["lat_cell"]), 6)
             lon = round(float(row["lon_cell"]), 6)
@@ -75,7 +75,7 @@ def get_map():
 
 
     model = xgb.XGBRegressor()
-    model.load_model("../ml/model2.ubj")
+    model.load_model("model2.ubj")
 
     coordinates = []
     dt = datetime.now()

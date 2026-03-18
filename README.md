@@ -1,11 +1,3 @@
----
-title: Firespot
-emoji: 🔥
-colorFrom: red
-colorTo: yellow
-sdk: docker
-pinned: false
----
 # FireSpot
 H4H 2026 Submission
 

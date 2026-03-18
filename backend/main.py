@@ -8,7 +8,7 @@ import xgboost as xgb
 from flask import Flask, make_response, request, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder='../frontend/dist')
+app = Flask(__name__, static_folder='static')
 CORS(app, resources={r"/*": {"origins": "*"}})
 GRID_RES = 0.1
 GRIDMET_VARS = ["erc", "fm100", "fm1000", "tmmx", "vpd", "vs"]
